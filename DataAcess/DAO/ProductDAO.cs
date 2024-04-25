@@ -18,7 +18,7 @@ namespace DataAcess.DAO
             List<ProductObject> products;
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 if (order)
                 {
                     products = context.Products.Where(p => p.InStock > 0).ToList();
@@ -43,7 +43,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     searchResult = context.Products
                                         .Where(p => p.ProductName.ToLower().Contains(name.ToLower()))
                                         .ToList();
@@ -69,7 +69,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     var _ = context.Products.Where(p => p.ProductId == productId);              
                     if (_ != null && _.Any())
                     {
@@ -102,7 +102,7 @@ namespace DataAcess.DAO
             {
                 if (GetProduct(product.ProductId) == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     context.Products.Add(product);
                     context.SaveChanges();
                 }
@@ -128,7 +128,7 @@ namespace DataAcess.DAO
                 ProductObject _mem = GetProduct(product.ProductId);
                 if (_mem != null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     context.Products.Update(product);
                     context.SaveChanges();
                 }
@@ -151,7 +151,7 @@ namespace DataAcess.DAO
                 ProductObject Product = GetProduct(productId);
                 if (Product != null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     context.Products.Remove(Product);
                     context.SaveChanges();
                 }

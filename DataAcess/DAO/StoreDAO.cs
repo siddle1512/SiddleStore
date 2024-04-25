@@ -18,7 +18,7 @@ namespace DataAcess.DAO
 
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 stores = context.Stores
                     .Include(u => u.Users)
                     .ToList();
@@ -39,7 +39,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     var _ = context.Stores.Where(s => s.StoreId == storeId);
                     if (_ != null && _.Any())
                     {
@@ -69,7 +69,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     searchResult = context.Stores
                                         .Where(p => p.StoreName.ToLower().Contains(name.ToLower()))
                                         .Include(u => u.Users)
@@ -100,7 +100,7 @@ namespace DataAcess.DAO
             {
                 if (GetStore(store.StoreId) == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     context.Stores.Add(store);
                     context.SaveChanges();
                 }
@@ -126,7 +126,7 @@ namespace DataAcess.DAO
                 StoreObject _mem = GetStore(store.StoreId);
                 if (_mem != null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     context.Stores.Update(store);
                     context.SaveChanges();
                 }
@@ -148,7 +148,7 @@ namespace DataAcess.DAO
                 StoreObject store = GetStore(storeId);
                 if (store != null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     context.Stores.Remove(store);
                     context.SaveChanges();
                 }

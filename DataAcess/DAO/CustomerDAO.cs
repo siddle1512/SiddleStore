@@ -17,7 +17,7 @@ namespace DataAcess.DAO
         public List<CustomerObject> GetCustomerList(int? storeId = null)
         {
             List<CustomerObject> customers;
-            var context = new SiddleSroteDbContext();
+            var context = new SiddleStoreDbContext();
             try
             {
                 if (storeId == null)
@@ -47,7 +47,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     var _ = context.Customers.Where(p => (p.CustomerId == customerId) || (p.NationalId.Equals(nationalId)));
                     if (_ != null && _.Any())
                     {
@@ -76,7 +76,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
                     searchResult = context.Customers
                                         .Where(p => p.CustomerFullName.ToLower().Contains(name.ToLower()))
                                         .ToList();
@@ -111,7 +111,7 @@ namespace DataAcess.DAO
                     newCustomer.Address = customer.Address;
                     newCustomer.Balance = customer.Balance;
 
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
 
                     context.Customers.Add(newCustomer);                  
                     context.SaveChanges();
@@ -137,7 +137,7 @@ namespace DataAcess.DAO
                 CustomerObject _mem = GetCustomer(customer.CustomerId, null);
                 if (_mem != null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
 
                     _mem.CustomerFullName = customer.CustomerFullName;
                     _mem.CustomerPhone = customer.CustomerPhone;

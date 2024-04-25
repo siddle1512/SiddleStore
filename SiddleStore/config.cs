@@ -1,9 +1,9 @@
 ﻿namespace SiddleStore
 {
-    public class cf
+    public class config
     {
         public static IConfiguration AppSetting { get; }
-        static cf()
+        static config()
         {
             AppSetting = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())

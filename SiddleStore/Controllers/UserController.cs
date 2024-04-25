@@ -35,11 +35,11 @@ namespace SiddleStore.Controllers
                 new Claim(ClaimTypes.Role, userLogin.Role.RoleName.ToString()),
              };
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(cf.AppSetting["JWT:Secret"]));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.AppSetting["JWT:Secret"]));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var tokeOptions = new JwtSecurityToken(
-                issuer: cf.AppSetting["JWT:ValidIssuer"],
-                audience: cf.AppSetting["JWT:ValidAudience"],
+                issuer: config.AppSetting["JWT:ValidIssuer"],
+                audience: config.AppSetting["JWT:ValidAudience"],
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: signinCredentials

@@ -17,7 +17,7 @@ namespace DataAcess.DAO
             Role role;
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 role = context.Roles.Where(r => r.RoleId == roleId).First();
             }
             catch (Exception ex)

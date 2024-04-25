@@ -3,13 +3,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace BusinessObject;
 
-public partial class SiddleSroteDbContext : DbContext
+public partial class SiddleStoreDbContext : DbContext
 {
-    public SiddleSroteDbContext()
+    public SiddleStoreDbContext()
     {
     }
 
-    public SiddleSroteDbContext(DbContextOptions<SiddleSroteDbContext> options)
+    public SiddleStoreDbContext(DbContextOptions<SiddleStoreDbContext> options)
         : base(options)
     {
     }
@@ -28,7 +28,6 @@ public partial class SiddleSroteDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             var builder = new ConfigurationBuilder()
-                            .SetBasePath(Directory.GetCurrentDirectory())
                             .AddJsonFile("appsettings.json", true, true);
             IConfigurationRoot configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("SqlData"));
@@ -45,7 +44,8 @@ public partial class SiddleSroteDbContext : DbContext
 
         modelBuilder.Entity<Role>().HasData(
             new Role { RoleId = 1, RoleName = "Manager" },
-            new Role { RoleId = 2, RoleName = "Customer" }
+            new Role { RoleId = 2, RoleName = "Customer" },
+            new Role { RoleId = 3, RoleName = "Employee" }
         );
 
         modelBuilder.Entity<StoreObject>(entity =>
@@ -85,7 +85,7 @@ public partial class SiddleSroteDbContext : DbContext
         });
 
         modelBuilder.Entity<UserObject>().HasData(
-            new UserObject { UserId = 1, StoreId = 1, RoleId = 1, UserName = "Binh", PasswordHashed = "binhbo22", Status = UserStatus.Activated }
+            new UserObject { UserId = 1, StoreId = 1, RoleId = 1, UserName = "Binh", PasswordHashed = "0JmNw88xNIslS+BAKIG3KgBSDPW4NKibp2qKL3/bunA=", Status = UserStatus.Activated },
         );
 
         modelBuilder.Entity<DailyRevenueObject>(entity =>
@@ -121,7 +121,7 @@ public partial class SiddleSroteDbContext : DbContext
         });
 
         modelBuilder.Entity<CustomerObject>().HasData(
-            new CustomerObject { CustomerId = 1, UserId = 1, CustomerFullName = "Le Minh Vuong", CustomerPhone = "0918955649", NationalId = "054202001111", Address = "NOXH An Phu Thinh Block B", Balance = 1000000000 }
+            new CustomerObject { CustomerId = 1, UserId = null, CustomerFullName = "Hua Duc Binh", CustomerPhone = "0918955649", NationalId = "054202001111", Address = "NOXH An Phu Thinh Block B", Balance = 1000000000 }
         );
 
         modelBuilder.Entity<OrderObject>(entity => 
@@ -160,7 +160,10 @@ public partial class SiddleSroteDbContext : DbContext
         });
 
         modelBuilder.Entity<ProductObject>().HasData(
-            new ProductObject { ProductId = 1, ProductName = "RTX4090", Price = 48000000, Discount = 0.2, InStock = 100, Status = ProductStatus.Available }
+            new ProductObject { ProductId = 1, ProductName = "RTX4090", Price = 48000000, Discount = 0.1, InStock = 100, Status = ProductStatus.Available },
+            new ProductObject { ProductId = 2, ProductName = "RTX4080", Price = 24000000, Discount = 0.1, InStock = 100, Status = ProductStatus.Available },
+            new ProductObject { ProductId = 3, ProductName = "RTX4070", Price = 17000000, Discount = 0.1, InStock = 100, Status = ProductStatus.Available },
+            new ProductObject { ProductId = 4, ProductName = "RTX4060", Price = 14000000, Discount = 0.1, InStock = 100, Status = ProductStatus.Available }
         );
 
         modelBuilder.Entity<OrderDetailObject>(entity =>

@@ -21,7 +21,7 @@ namespace DataAcess.DAO
 
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 users = context.Users
                     .Include(c => c.Customer)
                     .Include(s => s.Store)
@@ -40,7 +40,7 @@ namespace DataAcess.DAO
             UserObject user;
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 user = context.Users.Where(u => u.UserId == userId).First();
             }
             catch (Exception ex)
@@ -94,7 +94,7 @@ namespace DataAcess.DAO
                     throw new Exception("User is undefined!!");
                 }
 
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
 
                 UserObject user = new UserObject();
 
@@ -150,7 +150,7 @@ namespace DataAcess.DAO
 
         public void AccountActivate(int userId, bool activate)
         {
-            var context = new SiddleSroteDbContext();
+            var context = new SiddleStoreDbContext();
             UserObject user = GetUser(userId);
             if (activate)
             {

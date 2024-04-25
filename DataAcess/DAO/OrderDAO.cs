@@ -18,7 +18,7 @@ namespace DataAcess.DAO
             List<OrderObject> orders;
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 orders = context.Orders.ToList();
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace DataAcess.DAO
             OrderObject order;
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 order = context.Orders
                     .Where(o => o.OrderId == orderId)
                     .AsQueryable()
@@ -53,6 +53,13 @@ namespace DataAcess.DAO
                 throw new Exception("Invalid input for creating a order!");
             }
 
+            StoreObject store = StoreDAO.Instance.GetStore(viewModel.StoreId);
+
+            if (store == null)
+            {
+                throw new Exception("Invalid storeId!");
+            }
+
             OrderObject order = new OrderObject();
 
             int ignore = viewModel.CustomerId;
@@ -67,7 +74,7 @@ namespace DataAcess.DAO
             order.PaymentMethod = viewModel.PaymentMethod;
             order.Status = "Ordered";
 
-            var context = new SiddleSroteDbContext();
+            var context = new SiddleStoreDbContext();
             context.Orders.Add(order);
 
             context.SaveChanges();
@@ -120,7 +127,7 @@ namespace DataAcess.DAO
                 OrderObject order = GetOrder(orderId);
                 if (order != null)
                 {
-                    var context = new SiddleSroteDbContext();
+                    var context = new SiddleStoreDbContext();
 
                     order.Status = status;
                     context.Orders.Update(order);

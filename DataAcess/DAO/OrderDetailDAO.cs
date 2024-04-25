@@ -19,7 +19,7 @@ namespace DataAcess.DAO
 
             try
             {
-                var context = new SiddleSroteDbContext();
+                var context = new SiddleStoreDbContext();
                 orderDetails = context.OrderDetails
                     .Where(o => o.OrderId == orderId)
                     .Include(p => p.Product)

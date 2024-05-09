@@ -6,6 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using DataAcess.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using SiddleStore.Configurations;
+using SiddleStore.ExceptionFilterHandeling;
 
 namespace SiddleStore.Controllers
 {
@@ -13,17 +16,19 @@ namespace SiddleStore.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        public IUserRepository userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserController()
+        public UserController(IUserRepository userRepository)
         {
-            userRepository = new UserRepository();
+            _userRepository = userRepository;
         }
 
-        [HttpPost("Login")]
-        public IActionResult Login(string username, string password)
+        [HttpPost]
+        [Route("Login", Name = "Login")]
+        [TypeFilter(typeof(ExceptionFilter))]
+        public async Task<IActionResult> Login([FromBody] LoginViewModel viewModel)
         {
-            UserObject userLogin = userRepository.Login(username, password);
+            UserObject userLogin = await _userRepository.Login(viewModel.UserName, viewModel.Password);
             if (userLogin == null)
             {
                 return Unauthorized();
@@ -48,31 +53,21 @@ namespace SiddleStore.Controllers
             return Ok(new { Token = tokenString });
         }
 
-        [HttpPost("CreateAccount")]
-        public IActionResult CreateAccount(AccountViewModel viewModel)
+        [Authorize(Roles = "Manager, Employee, Customer")]
+        [HttpPost]
+        [TypeFilter(typeof(ExceptionFilter))]
+        public async Task<IActionResult> CreateAccount([FromBody] AccountViewModel viewModel)
         {
-            try
-            {
-                userRepository.CreateAccount(viewModel);              
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            await _userRepository.CreateAccount(viewModel);
             return Ok(new { mess = "Creating an account successfully!" });
         }
 
-        [HttpPut("ActivateAccount")]
-        public IActionResult ActivateAccount(int userId, bool activate)
+        [Authorize(Roles = "Manager")]
+        [HttpPut("{id:int}")]
+        [TypeFilter(typeof(ExceptionFilter))]
+        public async Task<IActionResult> ActivateAccount(int id, [FromBody] bool activate)
         {
-            try
-            {
-                userRepository.AccountActivate(userId, activate);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var result = await _userRepository.AccountActivate(id, activate);
             return Ok(new { mess = "Successfully!" });
         }
     }

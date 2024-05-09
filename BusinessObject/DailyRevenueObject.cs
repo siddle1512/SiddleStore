@@ -3,9 +3,9 @@
      public partial class DailyRevenueObject 
     {     
         public DateTime Date { get; set; }
-        public int StoreId;
-        public decimal TotalRevenue;
-        public decimal TotalOrder;
+        public int StoreId { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public decimal TotalOrder { get; set; }
         public virtual StoreObject Store { get; set; } = null!;
     }
 }

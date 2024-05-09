@@ -9,11 +9,11 @@ namespace SiddleStore.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private IProductRepository productRepository;
+        private IProductRepository _productRepository;
 
-        public ProductController()
+        public ProductController(IProductRepository productRepository)
         {
-            productRepository = new ProductRepository();
+            _productRepository = productRepository;
         }
 
         [Authorize(Roles = "Manager, Employee")]
@@ -22,11 +22,11 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                var products = productRepository.GetProductList();
+                var products = _productRepository.GetProductList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    products = productRepository.SearchProduct(search, products);
+                    products = _productRepository.SearchProduct(search, products);
                 }
 
                 var totalCount = products.Count();
@@ -50,7 +50,7 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                productRepository.AddProduct(product);
+                _productRepository.AddProduct(product);
                 return Ok(new { mess = "Add product successfully!" });
             }
             catch (Exception ex) 
@@ -66,7 +66,7 @@ namespace SiddleStore.Controllers
             try
             {
                 product.ProductId = id;
-                productRepository.Update(product);
+                _productRepository.Update(product);
 
                 return Ok(new { mess = "Update Product with the ID" + id + "successfully!" });
             }
@@ -86,7 +86,7 @@ namespace SiddleStore.Controllers
                 {
                     throw new Exception("Product ID is not found!");
                 }
-                productRepository.Delete(id.Value);
+                _productRepository.Delete(id.Value);
 
                 return Ok( new { mess = "Delete product successfully!"});      
             }

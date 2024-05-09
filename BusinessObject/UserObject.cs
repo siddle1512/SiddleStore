@@ -15,7 +15,7 @@
         public UserStatus Status { get; set; }
 
         public virtual CustomerObject? Customer { get; set; }
-        public virtual Role Role { get; set; } = null!;
+        public virtual RoleObject Role { get; set; } = null!;
         public virtual StoreObject Store { get; set; } = null!;
     }
 }

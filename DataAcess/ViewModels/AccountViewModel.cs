@@ -1,6 +1,4 @@
-﻿using BusinessObject;
-
-namespace DataAcess.ViewModels
+﻿namespace DataAcess.ViewModels
 {
     public class AccountViewModel
     {

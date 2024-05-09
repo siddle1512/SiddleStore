@@ -5,12 +5,11 @@ namespace DataAcess.DAO
 {
     public class ProductDAO
     {
-        private static ProductDAO? instance;
+        private readonly SiddleStoreDbContext _context;
 
-        public static ProductDAO Instance
+        public ProductDAO(SiddleStoreDbContext context)
         {
-            get { if (instance == null) instance = new ProductDAO(); return ProductDAO.instance; }
-            private set { ProductDAO.instance = value; }
+            _context = context;
         }
 
         public List<ProductObject> GetProductsList(bool order = false)
@@ -18,14 +17,13 @@ namespace DataAcess.DAO
             List<ProductObject> products;
             try
             {
-                var context = new SiddleStoreDbContext();
                 if (order)
                 {
-                    products = context.Products.Where(p => p.InStock > 0).ToList();
+                    products = _context.Products.Where(p => p.InStock > 0).ToList();
                 }
                 else
                 {
-                    products = context.Products.ToList();
+                    products = _context.Products.ToList();
                 }
             }
             catch (Exception ex)
@@ -42,9 +40,8 @@ namespace DataAcess.DAO
             try
             {
                 if (searchList == null)
-                {
-                    var context = new SiddleStoreDbContext();
-                    searchResult = context.Products
+                {             
+                    searchResult = _context.Products
                                         .Where(p => p.ProductName.ToLower().Contains(name.ToLower()))
                                         .ToList();
                 }
@@ -69,8 +66,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleStoreDbContext();
-                    var _ = context.Products.Where(p => p.ProductId == productId);              
+                    var _ = _context.Products.Where(p => p.ProductId == productId);              
                     if (_ != null && _.Any())
                     {
                         product = _.First();
@@ -82,17 +78,15 @@ namespace DataAcess.DAO
                         .AsQueryable()
                         .First();
                 }
-
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
             return product;
         }
 
-        public void AddProduct(ProductObject product)
+        public int AddProduct(ProductObject product)
         {
             if (product == null)
             {
@@ -102,9 +96,8 @@ namespace DataAcess.DAO
             {
                 if (GetProduct(product.ProductId) == null)
                 {
-                    var context = new SiddleStoreDbContext();
-                    context.Products.Add(product);
-                    context.SaveChanges();
+                    _context.Products.Add(product);
+                    return _context.SaveChanges();
                 }
                 else
                 {
@@ -117,7 +110,7 @@ namespace DataAcess.DAO
             }
         }
 
-        public void Update(ProductObject product)
+        public int Update(ProductObject product)
         {
             if (product == null)
             {
@@ -129,8 +122,8 @@ namespace DataAcess.DAO
                 if (_mem != null)
                 {
                     var context = new SiddleStoreDbContext();
-                    context.Products.Update(product);
-                    context.SaveChanges();
+                    _context.Products.Update(product);
+                    return _context.SaveChanges();
                 }
                 else
                 {
@@ -141,19 +134,17 @@ namespace DataAcess.DAO
             {
                 throw new Exception(ex.Message);
             }
-
         }
 
-        public void Delete(int productId)
+        public int Delete(int productId)
         {
             try
             {
                 ProductObject Product = GetProduct(productId);
                 if (Product != null)
                 {
-                    var context = new SiddleStoreDbContext();
-                    context.Products.Remove(Product);
-                    context.SaveChanges();
+                    _context.Products.Remove(Product);
+                    return _context.SaveChanges();
                 }
                 else
                 {

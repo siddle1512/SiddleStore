@@ -1,4 +1,4 @@
-﻿namespace SiddleStore
+﻿namespace SiddleStore.Configurations
 {
     public class config
     {

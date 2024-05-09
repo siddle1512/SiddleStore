@@ -9,11 +9,10 @@ namespace SiddleStore.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private ICustomerRepository customerRepository;
-
-        public CustomerController()
+        public ICustomerRepository _customerRepository;
+        public CustomerController(ICustomerRepository customerRepository)
         {
-            customerRepository = new CustomerRepository();
+            _customerRepository = customerRepository;
         }
 
         [Authorize(Roles = "Manager, Employee")]
@@ -22,11 +21,11 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                var customers = customerRepository.GetCustomerList(storeid).ToList();
+                var customers = _customerRepository.GetCustomerList(storeid).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    customers = customerRepository.SearchCustomer(search, customers);
+                    customers = _customerRepository.SearchCustomer(search, customers);
                 }
 
                 var totalCount = customers.Count();
@@ -51,7 +50,7 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                customerRepository.CreateAccount(customer);
+                _customerRepository.CreateAccount(customer);
             }
             catch (Exception ex)
             {
@@ -60,7 +59,6 @@ namespace SiddleStore.Controllers
             return Ok(new { mess = "Create a customer successfully!" });
         }
 
-
         [Authorize(Roles = "Manager, Employee")]
         [HttpPut("EditCustomer")]
         public IActionResult EditCustomer(int id, CustomerViewModel customer)
@@ -68,7 +66,7 @@ namespace SiddleStore.Controllers
             try
             {
                 customer.CustomerId = id;
-                customerRepository.Update(customer);             
+                _customerRepository.Update(customer);             
             }
             catch (Exception ex)
             {

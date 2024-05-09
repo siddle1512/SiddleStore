@@ -5,12 +5,11 @@ namespace DataAcess.DAO
 {
     public class OrderDetailDAO
     {
-        private static OrderDetailDAO? instance;
+        private readonly SiddleStoreDbContext _context;
 
-        public static OrderDetailDAO Instance
+        public OrderDetailDAO(SiddleStoreDbContext context)
         {
-            get { if (instance == null) instance = new OrderDetailDAO(); return OrderDetailDAO.instance; }
-            private set { OrderDetailDAO.instance = value; }
+            _context = context;
         }
 
         public List<OrderDetailObject> GetOrderDetails(int orderId)
@@ -19,8 +18,7 @@ namespace DataAcess.DAO
 
             try
             {
-                var context = new SiddleStoreDbContext();
-                orderDetails = context.OrderDetails
+                orderDetails = _context.OrderDetails
                     .Where(o => o.OrderId == orderId)
                     .Include(p => p.Product)
                     .ToList();

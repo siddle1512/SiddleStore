@@ -5,9 +5,9 @@ namespace DataAcess.Repository.User
 {
     public interface IUserRepository
     {
-        public List<UserObject> GetMembersList();
-        public UserObject Login(string username, string password);
-        public void CreateAccount(AccountViewModel viewModel);
-        public void AccountActivate(int userId, bool activate);
+        public Task<List<UserObject>> GetUserList();
+        public Task<UserObject> Login(string username, string password);
+        public Task<bool> CreateAccount(AccountViewModel viewModel);
+        public Task<bool> AccountActivate(int userId, bool activate);
     }
 }

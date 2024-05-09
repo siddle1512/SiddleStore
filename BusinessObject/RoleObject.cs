@@ -1,8 +1,8 @@
 ﻿namespace BusinessObject
 {
-    public partial class Role
+    public partial class RoleObject
     {
-        public Role() 
+        public RoleObject() 
         {
             Users = new HashSet<UserObject>();
         }

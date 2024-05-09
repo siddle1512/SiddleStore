@@ -5,12 +5,11 @@ namespace DataAcess.DAO
 {
     public class OrderDAO
     {
-        private static OrderDAO? instance;
+        private readonly SiddleStoreDbContext _context;
 
-        public static OrderDAO Instance
+        public OrderDAO(SiddleStoreDbContext context)
         {
-            get { if (instance == null) instance = new OrderDAO(); return OrderDAO.instance; }
-            private set { OrderDAO.instance = value; }
+            _context = context;
         }
 
         public List<OrderObject> GetOrderList()
@@ -18,8 +17,7 @@ namespace DataAcess.DAO
             List<OrderObject> orders;
             try
             {
-                var context = new SiddleStoreDbContext();
-                orders = context.Orders.ToList();
+                orders = _context.Orders.ToList();
             }
             catch (Exception ex)
             {
@@ -33,8 +31,7 @@ namespace DataAcess.DAO
             OrderObject order;
             try
             {
-                var context = new SiddleStoreDbContext();
-                order = context.Orders
+                order = _context.Orders
                     .Where(o => o.OrderId == orderId)
                     .AsQueryable()
                     .First();
@@ -46,14 +43,14 @@ namespace DataAcess.DAO
             return order;
         }
 
-        public void CreateOrder(OrderViewModel viewModel)
+        public int CreateOrder(OrderViewModel viewModel)
         {
             if (viewModel == null || viewModel.Products == null || !viewModel.Products.Any())
             {
                 throw new Exception("Invalid input for creating a order!");
             }
 
-            StoreObject store = StoreDAO.Instance.GetStore(viewModel.StoreId);
+            StoreObject store = _context.Stores.Where(s => s.StoreId == viewModel.StoreId).First();
 
             if (store == null)
             {
@@ -74,16 +71,13 @@ namespace DataAcess.DAO
             order.PaymentMethod = viewModel.PaymentMethod;
             order.Status = "Ordered";
 
-            var context = new SiddleStoreDbContext();
-            context.Orders.Add(order);
-
-            context.SaveChanges();
+            _context.Orders.Add(order);
 
             decimal total = 0;
 
             foreach (var productQuantity in viewModel.Products)
             {
-                ProductObject product = ProductDAO.Instance.GetProduct(productQuantity.ProductId);
+                ProductObject product = _context.Products.Where(p => p.ProductId == productQuantity.ProductId).First();
 
                 if (product == null)
                 {
@@ -107,13 +101,13 @@ namespace DataAcess.DAO
                     throw new Exception(product.ProductName + "is out of stock!");
                 }
 
-                context.Products.Update(product);
+                _context.Products.Update(product);
 
-                context.OrderDetails.Add(orderDetail);
+                _context.OrderDetails.Add(orderDetail);
             }
 
             order.Total = total;
-            context.SaveChanges();
+            return _context.SaveChanges();
         }
 
         public void Update(int orderId, string status)
@@ -127,11 +121,9 @@ namespace DataAcess.DAO
                 OrderObject order = GetOrder(orderId);
                 if (order != null)
                 {
-                    var context = new SiddleStoreDbContext();
-
                     order.Status = status;
-                    context.Orders.Update(order);
-                    context.SaveChanges();
+                    _context.Orders.Update(order);
+                    _context.SaveChanges();
                 }
                 else
                 {

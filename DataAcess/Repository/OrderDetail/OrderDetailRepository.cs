@@ -5,6 +5,13 @@ namespace DataAcess.Repository.OrderDetail
 {
     public class OrderDetailRepository : IOrderDetailRepository
     {
-        public List<OrderDetailObject> GetOrderDetails(int orderId) => OrderDetailDAO.Instance.GetOrderDetails(orderId);
+        private readonly OrderDetailDAO _orderDetailDAO;
+
+        public OrderDetailRepository(OrderDetailDAO orderDetailDAO)
+        {
+            _orderDetailDAO = orderDetailDAO;
+        }
+
+        public List<OrderDetailObject> GetOrderDetails(int orderId) => _orderDetailDAO.GetOrderDetails(orderId);
     }
 }

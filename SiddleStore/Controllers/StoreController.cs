@@ -2,6 +2,7 @@
 using DataAcess.Repository.Store;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SiddleStore.ExceptionFilterHandeling;
 
 namespace SiddleStore.Controllers
 {
@@ -9,89 +10,60 @@ namespace SiddleStore.Controllers
     [ApiController]
     public class StoreController : ControllerBase
     {
-        private IStoreRepository storeRepository;
+        private IStoreRepository _storeRepository;
 
-        public StoreController()
+        public StoreController(IStoreRepository storeRepository)
         {
-            storeRepository = new StoreRepositoty();
+            _storeRepository = storeRepository;
         }
 
         [Authorize(Roles = "Manager")]
         [HttpGet]
-        public IActionResult GetStoreList(string? search, int page = 1, int pageSize = 10) 
+        [Route("All", Name = "GetStoreList")]
+        [TypeFilter(typeof(ExceptionFilter))]
+        public async Task<IActionResult> GetStoreList(string? search, int page = 1, int pageSize = 10)
         {
-            try
+            var stores = await _storeRepository.GetStoreList();
+
+            if (!string.IsNullOrEmpty(search))
             {
-                var stores = storeRepository.GetStoreList();
-
-                if (!string.IsNullOrEmpty(search))
-                {
-                    stores = storeRepository.SearchStore(search, stores);
-                }
-                var totalCount = stores.Count();
-                var totalPages = (int)Math.Ceiling((decimal)totalCount * pageSize);
-
-                var productsPerPage = stores
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize);
-
-                return Ok(productsPerPage);
+                stores = await _storeRepository.SearchStore(search, stores);
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }          
+            var totalCount = stores.Count();
+            var totalPages = (int)Math.Ceiling((decimal)totalCount * pageSize);
+
+            var productsPerPage = stores
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            return Ok(productsPerPage);
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpPost("CreateStore")]
-        public IActionResult CreateStore(StoreObject store)
+        [HttpPost]
+        public async Task<IActionResult> CreateStore([FromBody] StoreObject store)
         {
-            try
-            {
-                storeRepository.AddStore(store);
-                return Ok(new { mess = "" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _storeRepository.AddStore(store);
+            return Ok(new { mess = "" });
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpPut("EditStore")]
-        public IActionResult EditStore(int id, StoreObject store)
+        [HttpPut("{id:int}")]
+        [TypeFilter(typeof(ExceptionFilter))]
+        public async Task<IActionResult> EditStore(int id, [FromBody] StoreObject store)
         {
-            try
-            {
-                store.StoreId = id;
-                storeRepository.Update(store);
-                return Ok(new { mess = "Update Store with the ID" + id + "successfully!" });
-            }
-            catch (Exception ex) 
-            {
-                return BadRequest(ex.Message);
-            }
+            store.StoreId = id;
+            bool result = await _storeRepository.Update(store);
+            return Ok(new { mess = "Update Store with the ID" + id + "successfully!" });
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpDelete("DeleteStore")]
-        public IActionResult DeleteStore(int? id)
+        [HttpDelete("{id:int}")]
+        [TypeFilter(typeof(ExceptionFilter))]
+        public async Task<IActionResult> DeleteStore(int id)
         {
-            try
-            {
-                if (id == null)
-                {
-                    throw new Exception("Store ID is not found!");
-                }
-                storeRepository.Delete(id.Value);
-
-                return Ok(new { mess = "Delete store successfully!" });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var result = await _storeRepository.Delete(id);
+            return Ok(new { mess = "Delete store successfully!" });
         }
     }
 }

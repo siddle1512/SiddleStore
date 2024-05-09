@@ -1,38 +1,34 @@
 ﻿using BusinessObject;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAcess.DAO
 {
     public class DailyRevenueDAO
     {
-        private static DailyRevenueDAO? instance;
+        private readonly SiddleStoreDbContext _context;
 
-        public static DailyRevenueDAO Instance
+        public DailyRevenueDAO(SiddleStoreDbContext context)
         {
-            get { if (instance == null) instance = new DailyRevenueDAO(); return DailyRevenueDAO.instance; }
-            private set { DailyRevenueDAO.instance = value; }
+            _context = context;
         }
 
         public List<DailyRevenueObject> GetDailyRevenueList()
         {
             List<DailyRevenueObject> dailyrevenues;
-
             try
             {
-                var context = new SiddleStoreDbContext();
-                dailyrevenues = context.DailyRevenues.ToList();
+                dailyrevenues = _context.DailyRevenues.ToList();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
             return dailyrevenues;
         }
 
-        public void CreateDailyRevenues()
+        public int CreateDailyRevenues()
         {
-            List<OrderObject> orders = OrderDAO.Instance.GetOrderList();
-            var context = new SiddleStoreDbContext();
+            List<OrderObject> orders = _context.Orders.ToList();
             DateTime currentDate = DateTime.Now.Date;
 
             if (orders != null && orders.Any())
@@ -52,7 +48,7 @@ namespace DataAcess.DAO
                 {
                     try
                     {
-                        bool entryExists = context.DailyRevenues
+                        bool entryExists = _context.DailyRevenues
                             .Any(dr => dr.StoreId == result.StoreId && dr.Date == result.Date);
 
                         if (!entryExists)
@@ -64,8 +60,7 @@ namespace DataAcess.DAO
                                 TotalRevenue = result.TotalRevenue,
                                 TotalOrder = result.TotalOrder
                             };
-                            context.DailyRevenues.Add(dailyRevenue);
-                            context.SaveChanges();
+                            _context.DailyRevenues.Add(dailyRevenue);
                         }
                         else
                         {
@@ -76,8 +71,8 @@ namespace DataAcess.DAO
                                 TotalRevenue = result.TotalRevenue,
                                 TotalOrder = result.TotalOrder
                             };
-                            context.DailyRevenues.Update(dailyRevenue);
-                            context.SaveChanges();
+                            _context.DailyRevenues.Update(dailyRevenue);
+                            return _context.SaveChanges();
                         }
                     }
                     catch (Exception ex)
@@ -86,6 +81,7 @@ namespace DataAcess.DAO
                     }
                 }
             }
+            return _context.SaveChanges();
         }
     }
 }

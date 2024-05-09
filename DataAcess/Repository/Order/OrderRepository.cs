@@ -6,9 +6,16 @@ namespace DataAcess.Repository.Order
 {
     public class OrderRepository : IOrderRepository
     {
-        public OrderObject GetOrder(int orderId) => OrderDAO.Instance.GetOrder(orderId);
-        public List<OrderObject> GetOrderList() => OrderDAO.Instance.GetOrderList();
-        public void CreateOrder(OrderViewModel viewModel) => OrderDAO.Instance.CreateOrder(viewModel);
-        public void Update(int orderId, string status) => OrderDAO.Instance.Update(orderId, status);
+        private readonly OrderDAO _orderDAO;
+
+        public OrderRepository(OrderDAO orderDAO)
+        {
+            _orderDAO = orderDAO;
+        }
+
+        public OrderObject GetOrder(int orderId) => _orderDAO.GetOrder(orderId);
+        public List<OrderObject> GetOrderList() => _orderDAO.GetOrderList();
+        public void CreateOrder(OrderViewModel viewModel) => _orderDAO.CreateOrder(viewModel);
+        public void Update(int orderId, string status) => _orderDAO.Update(orderId, status);
     }
 }

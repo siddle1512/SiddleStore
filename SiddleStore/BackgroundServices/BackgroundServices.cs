@@ -1,11 +1,9 @@
-﻿using DataAcess.DAO;
-
-namespace SiddleStore.BackgroundServices
+﻿namespace SiddleStore.BackgroundServices
 {
     public class BackgroundServices : IHostedService, IDisposable
     {
-        Timer? timer;
-        ILogger logger;
+        private Timer? timer;
+        private ILogger logger;
 
         public BackgroundServices(ILogger<BackgroundServices> logger)
         {
@@ -26,6 +24,7 @@ namespace SiddleStore.BackgroundServices
             logger.LogInformation("[BackgroundServices] at: " + DateTime.Now);
             timer = new Timer(Execute, null, period, TimeSpan.FromHours(24));
             await Task.Delay(5000);
+
             logger.LogInformation("[BackgroundServices] started at " + DateTime.Now);
             await Task.CompletedTask;
         }
@@ -33,13 +32,12 @@ namespace SiddleStore.BackgroundServices
         public Task StopAsync(CancellationToken cancellationToken)
         {
             timer?.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask; ;
+            return Task.CompletedTask;
         }
 
         private void Execute(object? state)
         {
-            logger.LogInformation("[BackgroundServices] excuted at " + DateTime.Now);
-            DailyRevenueDAO.Instance.CreateDailyRevenues();
-        } 
+            logger.LogInformation("[BackgroundServices] executed at " + DateTime.Now);
+        }
     }
 }

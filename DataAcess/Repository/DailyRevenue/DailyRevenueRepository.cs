@@ -5,6 +5,14 @@ namespace DataAcess.Repository.DailyRevenue
 {
     public class DailyRevenueRepository : IDailyRevenueRepository
     {
-        public List<DailyRevenueObject> GetDailyRevenueList() => DailyRevenueDAO.Instance.GetDailyRevenueList();
+        private readonly DailyRevenueDAO _dailyRevenueDAO;
+
+        public DailyRevenueRepository(DailyRevenueDAO dailyRevenueDAO)
+        {
+            _dailyRevenueDAO = dailyRevenueDAO;
+        }
+
+        public List<DailyRevenueObject> GetDailyRevenueList() => _dailyRevenueDAO.GetDailyRevenueList();
+        public int CreateDailyRevenues() => _dailyRevenueDAO.CreateDailyRevenues();
     }
 }

@@ -10,15 +10,14 @@ namespace SiddleStore.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private IOrderRepository orderRepository;
-        private IOrderDetailRepository orderDetailRepository;
+        private IOrderRepository _orderRepository;
+        private IOrderDetailRepository _orderDetailRepository;
 
-        public OrderController()
+        public OrderController(IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository)
         {
-            orderRepository = new OrderRepository();
-            orderDetailRepository = new OrderDetailRepository();
+            _orderRepository = orderRepository;
+            _orderDetailRepository = orderDetailRepository;
         }
-
 
         [Authorize(Roles = "Manager, Employee")]
         [HttpGet]
@@ -26,7 +25,7 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                var oreders = orderRepository.GetOrderList();
+                var oreders = _orderRepository.GetOrderList();
                 return Ok(oreders);
             }
             catch (Exception ex)
@@ -41,7 +40,7 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                var orderDetails = orderDetailRepository.GetOrderDetails(orderId);
+                var orderDetails = _orderDetailRepository.GetOrderDetails(orderId);
                 return Ok(orderDetails);
             }
             catch (Exception ex)
@@ -56,7 +55,7 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                orderRepository.CreateOrder(viewNodel);
+                _orderRepository.CreateOrder(viewNodel);
                 return Ok(new { mess = "Add order successfully!" });
             }
             catch (Exception ex)
@@ -71,7 +70,7 @@ namespace SiddleStore.Controllers
         {
             try
             {
-                orderRepository.Update(id, status);              
+                _orderRepository.Update(id, status);              
             }
             catch (Exception ex)
             {

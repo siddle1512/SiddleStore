@@ -19,7 +19,7 @@ public partial class SiddleStoreDbContext : DbContext
     public virtual DbSet<OrderDetailObject> OrderDetails { get; set; } = null!;
     public virtual DbSet<ProductObject> Products { get; set; } = null!;
     public virtual DbSet<UserObject> Users { get; set; } = null!;
-    public virtual DbSet<Role> Roles { get; set; } = null!;
+    public virtual DbSet<RoleObject> Roles { get; set; } = null!;
     public virtual DbSet<StoreObject> Stores { get; set; } = null!;
     public virtual DbSet<DailyRevenueObject> DailyRevenues { get; set; } = null!;
 
@@ -36,16 +36,16 @@ public partial class SiddleStoreDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Role>(entity =>
+        modelBuilder.Entity<RoleObject>(entity =>
         {
             entity.HasKey("RoleId");
             entity.Property("RoleName");    
         });
 
-        modelBuilder.Entity<Role>().HasData(
-            new Role { RoleId = 1, RoleName = "Manager" },
-            new Role { RoleId = 2, RoleName = "Customer" },
-            new Role { RoleId = 3, RoleName = "Employee" }
+        modelBuilder.Entity<RoleObject>().HasData(
+            new RoleObject { RoleId = 1, RoleName = "Manager" },
+            new RoleObject { RoleId = 2, RoleName = "Customer" },
+            new RoleObject { RoleId = 3, RoleName = "Employee" }
         );
 
         modelBuilder.Entity<StoreObject>(entity =>
@@ -85,7 +85,7 @@ public partial class SiddleStoreDbContext : DbContext
         });
 
         modelBuilder.Entity<UserObject>().HasData(
-            new UserObject { UserId = 1, StoreId = 1, RoleId = 1, UserName = "Binh", PasswordHashed = "0JmNw88xNIslS+BAKIG3KgBSDPW4NKibp2qKL3/bunA=", Status = UserStatus.Activated },
+            new UserObject { UserId = 1, StoreId = 1, RoleId = 1, UserName = "Binh", PasswordHashed = "0JmNw88xNIslS+BAKIG3KgBSDPW4NKibp2qKL3/bunA=", Status = UserStatus.Activated }
         );
 
         modelBuilder.Entity<DailyRevenueObject>(entity =>
@@ -143,7 +143,8 @@ public partial class SiddleStoreDbContext : DbContext
                 .HasConstraintName("FK_Order_Store");
 
             entity.Property(e => e.Date);
-            entity.Property(e => e.Total);
+            entity.Property(e => e.Total)
+                  .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.PaymentMethod);
             entity.Property(e => e.Status);
         });
@@ -153,7 +154,8 @@ public partial class SiddleStoreDbContext : DbContext
             entity.ToTable("Product");
             entity.HasKey (e => e.ProductId);
             entity.Property(e => e.ProductName);
-            entity.Property(e => e.Price);
+            entity.Property(e => e.Price)
+                  .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Discount);
             entity.Property(e => e.InStock);
             entity.Property(e => e.Status);
@@ -185,7 +187,8 @@ public partial class SiddleStoreDbContext : DbContext
 
             entity.Property(e => e.Quantity);
             entity.Property(e => e.Discount);
-            entity.Property(e => e.SubTotal);
+            entity.Property(e => e.SubTotal)
+                  .HasColumnType("decimal(18, 2)");
         });
 
         OnModelCreatingPartial(modelBuilder);

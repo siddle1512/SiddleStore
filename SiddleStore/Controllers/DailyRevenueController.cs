@@ -8,20 +8,28 @@ namespace SiddleStore.Controllers
     [ApiController]
     public class DailyRevenueController : ControllerBase
     {
-        public IDailyRevenueRepository dailyRevenueRepository;
-        public DailyRevenueController()
+        public IDailyRevenueRepository _dailyRevenueRepository;
+        public DailyRevenueController(IDailyRevenueRepository dailyRevenueRepository)
         {
-            dailyRevenueRepository = new DailyRevenueRepository();
+            _dailyRevenueRepository = dailyRevenueRepository;
         }
 
         [Authorize(Roles = "Manager, Employee")]
         [HttpGet]
-        public IActionResult GetDailyRevenueList()
+        public IActionResult GetDailyRevenueList(int page = 1, int pageSize = 10)
         {
             try
             {
-                var dailyRevenues = dailyRevenueRepository.GetDailyRevenueList();
-                return Ok(dailyRevenues);
+                var dailyRevenues = _dailyRevenueRepository.GetDailyRevenueList();
+
+                var totalCount = dailyRevenues.Count;
+                var totalPages = (int)Math.Ceiling((decimal)totalCount * pageSize);
+
+                var dailyRevenuesPerPage = dailyRevenues
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize);
+
+                return Ok(dailyRevenuesPerPage);
             }
             catch (Exception ex)
             {

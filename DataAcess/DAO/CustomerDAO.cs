@@ -6,27 +6,25 @@ namespace DataAcess.DAO
 {
     public class CustomerDAO
     {
-        private static CustomerDAO? instance;
+        private readonly SiddleStoreDbContext _context;
 
-        public static CustomerDAO Instance
+        public CustomerDAO(SiddleStoreDbContext context)
         {
-            get { if (instance == null) instance = new CustomerDAO(); return CustomerDAO.instance; }
-            private set { CustomerDAO.instance = value; }
+            _context = context;
         }
 
         public List<CustomerObject> GetCustomerList(int? storeId = null)
         {
             List<CustomerObject> customers;
-            var context = new SiddleStoreDbContext();
             try
             {
                 if (storeId == null)
                 {
-                    customers = context.Customers.Include(u => u.User).ToList();
+                    customers = _context.Customers.Include(u => u.User).ToList();
                 }
                 else
                 {
-                    customers = context.Customers
+                    customers = _context.Customers
                         .Where(c => c.User.StoreId == storeId)
                         .Include(u => u.User)
                         .ToList();
@@ -47,8 +45,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleStoreDbContext();
-                    var _ = context.Customers.Where(p => (p.CustomerId == customerId) || (p.NationalId.Equals(nationalId)));
+                    var _ = _context.Customers.Where(p => (p.CustomerId == customerId) || (p.NationalId.Equals(nationalId)));
                     if (_ != null && _.Any())
                     {
                         customer = _.First();
@@ -76,8 +73,7 @@ namespace DataAcess.DAO
             {
                 if (searchList == null)
                 {
-                    var context = new SiddleStoreDbContext();
-                    searchResult = context.Customers
+                    searchResult = _context.Customers
                                         .Where(p => p.CustomerFullName.ToLower().Contains(name.ToLower()))
                                         .ToList();
                 }
@@ -111,10 +107,8 @@ namespace DataAcess.DAO
                     newCustomer.Address = customer.Address;
                     newCustomer.Balance = customer.Balance;
 
-                    var context = new SiddleStoreDbContext();
-
-                    context.Customers.Add(newCustomer);                  
-                    context.SaveChanges();
+                    _context.Customers.Add(newCustomer);
+                    _context.SaveChanges();
                 }
                 else
                 {
@@ -126,7 +120,7 @@ namespace DataAcess.DAO
             }
         }
 
-        public void Update(CustomerViewModel customer)
+        public int Update(CustomerViewModel customer)
         {
             if (customer == null)
             {
@@ -136,17 +130,15 @@ namespace DataAcess.DAO
             {
                 CustomerObject _mem = GetCustomer(customer.CustomerId, null);
                 if (_mem != null)
-                {
-                    var context = new SiddleStoreDbContext();
-
+                {              
                     _mem.CustomerFullName = customer.CustomerFullName;
                     _mem.CustomerPhone = customer.CustomerPhone;
                     _mem.NationalId = customer.NationalId;
                     _mem.Address = customer.Address;
                     _mem.Balance = customer.Balance;
 
-                    context.Customers.Update(_mem);
-                    context.SaveChanges();
+                    _context.Customers.Update(_mem);
+                    return _context.SaveChanges();
                 }
                 else
                 {
@@ -159,6 +151,5 @@ namespace DataAcess.DAO
             }
 
         }
-
     }
 }

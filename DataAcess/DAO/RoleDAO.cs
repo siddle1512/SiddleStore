@@ -1,24 +1,23 @@
 ﻿using BusinessObject;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAcess.DAO
 {
     public class RoleDAO
     {
-        private static RoleDAO? instance;
+        private readonly SiddleStoreDbContext _context;
 
-        public static RoleDAO Instance
+        public RoleDAO(SiddleStoreDbContext context)
         {
-            get { if (instance == null) instance = new RoleDAO(); return RoleDAO.instance; }
-            private set { RoleDAO.instance = value; }
+            _context = context;
         }
 
-        public Role GetRole(int roleId)
+        public RoleObject GetRole(int roleId)
         {
-            Role role;
+            RoleObject role;
             try
             {
-                var context = new SiddleStoreDbContext();
-                role = context.Roles.Where(r => r.RoleId == roleId).First();
+                role = _context.Roles.Where(r => r.RoleId == roleId).First();
             }
             catch (Exception ex)
             {
